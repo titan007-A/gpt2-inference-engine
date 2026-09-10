@@ -25,3 +25,7 @@ benchmarks/results/
 Thumbs.db
 .vscode/
 .idea/
+
+# Office temp / lock files
+~$*
+*.tmp
