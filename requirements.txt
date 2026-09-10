@@ -1,9 +1,11 @@
 # GPT-2 Optimized Inference Engine - dependencies
 # Install:  pip install -r requirements.txt
 #
-# For a CUDA build of PyTorch, install torch separately from the official index first, e.g.:
-#   pip install torch --index-url https://download.pytorch.org/whl/cu121
-# (match the cuXXX tag to your installed CUDA / driver).
+# The plain `torch` below is the CPU build. For an NVIDIA GPU, install a CUDA build
+# from the official index instead, matching the cuXXX tag to your driver, e.g.:
+#   pip install --upgrade torch --index-url https://download.pytorch.org/whl/cu130
+# RTX 50-series (Blackwell / sm_120) needs cu128 or newer; this repo was set up with
+# torch 2.14.0+cu130 on an RTX 5050 (driver CUDA 13.2).
 
 # --- core ---
 torch>=2.2
