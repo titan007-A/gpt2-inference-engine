@@ -1,0 +1,25 @@
+# Packaging + tooling config (declarative only - no build logic here).
+# Runtime dependencies are managed in requirements.txt.
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gpt2-inference-engine"
+version = "0.1.0"
+description = "From-scratch optimized inference engine for GPT-2 (custom attention, KV cache, batching, serving)."
+readme = "README.md"
+requires-python = ">=3.10"
+# dependencies: see requirements.txt  (install with:  pip install -r requirements.txt)
+
+[tool.setuptools]
+packages = ["engine", "serving", "optimizations", "benchmarks"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
