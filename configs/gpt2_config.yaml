@@ -1,0 +1,59 @@
+# GPT-2 Optimized Inference Engine - configuration
+# Data only (no code). Adjust values as you progress through the phases.
+
+model:
+  name: gpt2              # gpt2 | gpt2-medium | gpt2-large | gpt2-xl
+  hf_checkpoint: gpt2     # HuggingFace id consumed by engine/weights.py
+  # Architecture values below are the gpt2 (124M) defaults - override per variant.
+  n_layer: 12
+  n_head: 12
+  n_embd: 768
+  n_positions: 1024
+  vocab_size: 50257
+  dtype: fp32            # fp32 (Phase 1) | fp16 | bf16 (Phase 2)
+
+paths:
+  weights_dir: ./weights            # local converted-checkpoint cache
+  tokenizer: gpt2                   # HuggingFace tokenizer id or local path
+
+kv_cache:
+  mode: dynamic          # dynamic (Phase 1) | preallocated (Phase 2) | paged (Phase 4)
+  max_seq_len: 1024
+  max_batch_size: 8
+  page_block_size: 16    # only used when mode: paged
+
+sampling:
+  strategy: greedy       # greedy | topk | topp
+  temperature: 1.0
+  top_k: 50
+  top_p: 0.95
+  max_new_tokens: 128
+  seed: 0
+
+batching:
+  enabled: false         # Phase 3
+  scheduler: static      # static | continuous
+  max_queue_size: 256
+  max_batch_tokens: 4096
+
+quantization:
+  enabled: false         # Phase 5
+  mode: int8             # int8 | int4
+  backend: bitsandbytes
+
+speculative:
+  enabled: false         # Phase 6 (optional)
+  draft_model: distilgpt2
+  lookahead: 4
+
+serving:
+  host: 0.0.0.0
+  port: 8000
+  stream: true           # token-by-token (SSE / WebSocket)
+  request_timeout_s: 60
+
+benchmarks:
+  warmup_runs: 3
+  trials: 10
+  prompt: "Once upon a time"
+  concurrency_levels: [1, 2, 4, 8, 16]

@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Virtual env
+.venv/
+venv/
+
+# Model weights / caches
+weights/
+*.pt
+*.bin
+*.safetensors
+.cache/
+
+# Benchmark output
+benchmarks/results/
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

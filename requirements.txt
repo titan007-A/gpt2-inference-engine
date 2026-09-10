@@ -1,0 +1,28 @@
+# GPT-2 Optimized Inference Engine - dependencies
+# Install:  pip install -r requirements.txt
+#
+# For a CUDA build of PyTorch, install torch separately from the official index first, e.g.:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu121
+# (match the cuXXX tag to your installed CUDA / driver).
+
+# --- core ---
+torch>=2.2
+transformers>=4.40
+tokenizers>=0.19
+numpy>=1.26
+pyyaml>=6.0
+
+# --- serving (Phase 7) ---
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+sse-starlette>=2.1
+
+# --- quantization (Phase 5, optional) ---
+# bitsandbytes>=0.43        # Windows may need a prebuilt wheel; enable when you reach Phase 5
+
+# --- benchmarking / profiling (Phase 8) ---
+rich>=13.7
+
+# --- dev / tests ---
+pytest>=8.1
