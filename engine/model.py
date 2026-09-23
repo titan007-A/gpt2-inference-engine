@@ -32,8 +32,8 @@ class GPT2Block(nn.Module):
         self.ln_2 = nn.LayerNorm(config.n_embd)
         self.mlp = MLP(config)
 
-    def forward(self, x):
-        x = x + self.attn(self.ln_1(x))
+    def forward(self, x,cache=None,layer_idx=None):
+        x = x + self.attn(self.ln_1(x),cache=cache,layer_idx=layer_idx)
         x = x + self.mlp(self.ln_2(x))
         return x
 
@@ -51,7 +51,7 @@ class GPT2Model(nn.Module):
         # weight tying: lm_head aur wte same weights share karte hain (GPT-2 ka standard)
         self.lm_head.weight = self.wte.weight
 
-    def forward(self, input_ids, position_offset=0):
+    def forward(self, input_ids, cache=None, position_offset=0):
         B, T = input_ids.shape
 
         positions = torch.arange(
@@ -60,8 +60,8 @@ class GPT2Model(nn.Module):
 
         x = self.wte(input_ids) + self.wpe(positions)
 
-        for block in self.h:
-            x = block(x)
+        for i,block in enumerate(self.h):
+            x = block(x,cache=cache,layer_idx=i)
 
         x = self.ln_f(x)
         logits = self.lm_head(x)

@@ -50,22 +50,24 @@ class Attention(nn.Module):
                  .view(1, 1, config.block_size, config.block_size)
         )
 
-    def forward(self, x):
+    def forward(self, x,cache=None,layer_idx=None):
         B, T, C = x.size()  # batch, sequence length, embedding dim
 
         # Project to query, key, value, then split into heads
-        q, k, v = self.c_attn(x).split(self.n_embd, dim=2)
+        q,k,v = self.c_attn(x).split(self.n_embd, dim=2)
         head_dim = C // self.n_head
 
         q = q.view(B, T, self.n_head, head_dim).transpose(1, 2)  # (B, nh, T, hd)
         k = k.view(B, T, self.n_head, head_dim).transpose(1, 2)
         v = v.view(B, T, self.n_head, head_dim).transpose(1, 2)
-
+        if cache is not None:
+            k, v = cache.update(layer_idx, k, v)
         # Scaled dot-product attention
         att = (q @ k.transpose(-2, -1)) * (1.0 / math.sqrt(head_dim))  # (B, nh, T, T)
-
+        Tq = q.shape[2]
+        Tk = k.shape[2]
         # Apply causal mask: block attention to future positions
-        att = att.masked_fill(self.mask[:, :, :T, :T] == 0, float("-inf"))
+        att = att.masked_fill(self.mask[:, :, Tk-Tq:Tk, :Tk] == 0, float("-inf"))
         att = F.softmax(att, dim=-1)
         att = self.attn_dropout(att)
 
