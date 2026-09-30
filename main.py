@@ -29,7 +29,7 @@ def main():
     cfg = load_config()
     torch.manual_seed(cfg["sampling"]["seed"])
 
-    model = load_hf_weights(cfg["model"]["hf_checkpoint"])
+    model = load_hf_weights(cfg["model"]["hf_checkpoint"], cfg["model"]["device"])
     tok = Tokenizer(cfg["paths"]["tokenizer"])
 
     prompt = sys.argv[1] if len(sys.argv) > 1 else cfg["benchmarks"]["prompt"]

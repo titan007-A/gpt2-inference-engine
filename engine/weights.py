@@ -13,7 +13,14 @@ from engine.model import GPT2Model
 # HF stores these as Conv1D (in, out); nn.Linear wants (out, in) -> transpose
 CONV1D_WEIGHTS = ("attn.c_attn.weight", "attn.c_proj.weight", "mlp.c_fc.weight", "mlp.c_proj.weight")
 
-def load_hf_weights(model_name="gpt2"):
+def resolve_device(device=None):
+    """None ya 'auto' -> gpu mile to gpu, warna cpu. Warna jo diya hai wahi."""
+    if device in (None, "auto"):
+        return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    return torch.device(device)
+
+
+def load_hf_weights(model_name="gpt2", device=None):
     hf= GPT2LMHeadModel.from_pretrained(model_name)
 
     config = GPT2Config(
@@ -40,5 +47,5 @@ def load_hf_weights(model_name="gpt2"):
     missing = [k for k in missing if not k.endswith("attn.mask")]
     assert not missing and not unexpected, (missing, unexpected)
 
-    return model.eval()
+    return model.eval().to(resolve_device(device))
 

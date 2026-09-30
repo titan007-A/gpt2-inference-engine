@@ -17,7 +17,9 @@ MAX_NEW_TOKENS = 50
 
 @pytest.fixture(scope="module")
 def models():
-    ours = load_hf_weights("gpt2")
+    # parity CPU pe hi check karte hain - HF reference bhi cpu pe hai aur fp32 cpu
+    # deterministic rehta hai, to tolerance GPU kernel variance se nahi hilti
+    ours = load_hf_weights("gpt2", device="cpu")
     hf = GPT2LMHeadModel.from_pretrained("gpt2").eval()
     tok = GPT2TokenizerFast.from_pretrained("gpt2")
     return ours, hf, tok

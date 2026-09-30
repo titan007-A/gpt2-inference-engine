@@ -16,8 +16,9 @@ weights/
 *.safetensors
 .cache/
 
-# Benchmark output
-benchmarks/results/
+# Benchmark output (raw runs ignored, likhe hue conclusions track hote hain)
+benchmarks/results/*
+!benchmarks/results/*.md
 *.log
 
 # OS / editor

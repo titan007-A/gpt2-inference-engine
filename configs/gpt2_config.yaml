@@ -4,6 +4,7 @@
 model:
   name: gpt2              # gpt2 | gpt2-medium | gpt2-large | gpt2-xl
   hf_checkpoint: gpt2     # HuggingFace id consumed by engine/weights.py
+  device: auto            # auto (gpu mile to gpu) | cuda | cpu
   # Architecture values below are the gpt2 (124M) defaults - override per variant.
   n_layer: 12
   n_head: 12
