@@ -7,8 +7,9 @@ GPT-2 architecture: transformer blocks (LayerNorm + Attention + MLP + residuals)
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
 from engine.attention import Attention, GPT2Config   # attention.py se import
+from engine.kv_cache import KVCache
+from engine import sampler
 
 
 class MLP(nn.Module):
@@ -66,3 +67,21 @@ class GPT2Model(nn.Module):
         x = self.ln_f(x)
         logits = self.lm_head(x)
         return logits
+
+    @torch.inference_mode()
+    def generate(self,prompt,max_new_tokens,tokenizer,temperature=0,top_k=None, top_p=None):
+        device = next(self.parameters()).device
+        input_ids = tokenizer.encode(prompt, device=device)
+        cache = KVCache(self.config.n_layer)
+        logits = self.forward(input_ids, cache=cache, position_offset=0)
+        generated = [input_ids]
+        for i in range(max_new_tokens):
+            next_token = sampler.sample(logits, temperature, top_k,top_p)
+            generated.append(next_token)
+            if next_token.item()== tokenizer.eos_token_id:
+                break
+            if i < max_new_tokens - 1:   # aakhri token ke baad logits koi use nahi karta
+                logits = self.forward(next_token, cache=cache, position_offset=cache.length)
+
+        output_ids = torch.cat(generated, dim=1)
+        return tokenizer.decode(output_ids[0])
